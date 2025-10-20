@@ -138,7 +138,7 @@ src/ru/Daripov/
 - Демонстрация независимости объектов точек
 - Изменение координат линий
 - Результат работы кода:
-<img width="10000" height="707" alt="image" src="https://github.com/user-attachments/assets/02062625-fa1a-4727-b249-20940335cab4" />
+<img width="463" height="707" alt="image" src="https://github.com/user-attachments/assets/02062625-fa1a-4727-b249-20940335cab4" />
 
 ### Задание 1.12: ⬛ Квадраты и ломаные
 - Создание квадрата и получение его периметра
