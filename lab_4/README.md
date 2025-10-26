@@ -90,16 +90,16 @@
 ### 🔧 Утилитные классы
 - GenericApply
   - Применяет функцию к каждому элементу коллекции
-    - applyToList(List<T> list, Function<T, P> function)
+    - applyToList(List(T) list, Function(T, P) function)
 -  GenericFilter
   - Фильтрует коллекцию по предикату
-    - filter(List<T> list, Predicate<T> predicate)
+    - filter(List(T) list, Predicate(T) predicate)
 - GenericReduce
   - Сокращает коллекцию до одного значения
-    - reduce(List<T> list, T identity, BinaryOperator<T> accumulator)
+    - reduce(List(T) list, T identity, BinaryOperator(T) accumulator)
 - GenericCollection
   - Преобразует коллекцию в другую структуру
-    - transform(List<T> sourceList, Supplier<P> collectionSupplier, BiConsumer<P, T> accumulator)
+    - transform(List(T) sourceList, Supplier(P) collectionSupplier, BiConsumer(P, T) accumulator)
 - LineUtils
   - Утилиты для работы с линиями и точками
     - shiftStartX() - сдвиг начала линии по оси X
