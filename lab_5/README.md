@@ -185,7 +185,7 @@
   - Группировка по номерам (`groupingBy()`)
   - Пример: `[5:[Вася, Аня], 3:[Петя]]`
 - Результат работы:
-  <img width="272" height="461" alt="image" src="https://github.com/user-attachments/assets/268240a0-bf63-4dbc-89ef-38d28bb3599e" />
+<img width="272" height="461" alt="image" src="https://github.com/user-attachments/assets/268240a0-bf63-4dbc-89ef-38d28bb3599e" />
 
 ## 👨‍💻 Разработчик
 - **Дарипов Александр**
