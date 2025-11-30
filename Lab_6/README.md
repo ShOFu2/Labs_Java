@@ -82,7 +82,6 @@
         System.out.println("Private method called");
     }
   }
-
 ### ⚡ @Default
 **Указание типов по умолчанию для классов и полей:**
 - Цель: классы и поля
@@ -143,7 +142,6 @@
   ```
   @Cache({"users", "profiles", "settings"})
   public class DataService { }
-
 ## 🎯 Функциональность
 ### 🔮 Задание 1.1 - @Invoke 
 - Автоматический вызов методов
@@ -180,3 +178,4 @@
 ## 👨‍💻 Разработчик
 - **Дарипов Александр**
 - 📧 alelsandur608@gmail.com
+
