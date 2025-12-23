@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${customer.id != null} ? 'Редактирование клиента' : 'Добавление клиента'">
+        Добавление клиента
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding: 20px; }
+        .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        <span th:text="${customer.id != null} ? 'Редактирование клиента' : 'Добавление нового клиента'"></span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="${customer.id != null} ?
+                                         @{/customers/update/{id}(id=${customer.id})} :
+                                         @{/customers}"
+                          method="post" th:object="${customer}">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="customerName" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Имя клиента *
+                                </label>
+                                <input type="text" th:field="*{customerName}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('customerName')} ? 'is-invalid'"
+                                       id="customerName" required>
+                                <div th:if="${#fields.hasErrors('customerName')}"
+                                     class="invalid-feedback">
+                                    <span th:errors="*{customerName}"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="phoneNumber" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>Номер телефона *
+                                </label>
+                                <input type="text" th:field="*{phoneNumber}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
+                                       id="phoneNumber" required>
+                                <div th:if="${#fields.hasErrors('phoneNumber')}"
+                                     class="invalid-feedback">
+                                    <span th:errors="*{phoneNumber}"></span>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Формат: +71234567890 или 81234567890
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="isNewCustomer" class="form-label">
+                                    <i class="fas fa-star me-1"></i>Статус клиента
+                                </label>
+                                <select th:field="*{isNewCustomer}" class="form-select" id="isNewCustomer">
+                                    <option value="true">Новый клиент</option>
+                                    <option value="false">Постоянный клиент</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="registrationDate" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Дата регистрации
+                                </label>
+                                <input type="date" name="registrationDate"
+                                       class="form-control" id="registrationDate"
+                                       th:value="${customer.registrationDate != null} ?
+                         ${#temporals.format(customer.registrationDate, 'yyyy-MM-dd')} : ''">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <div>
+                                <a th:href="@{/customers}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>Назад к списку
+                                </a>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save me-1"></i>
+                                    <span th:text="${customer.id != null} ? 'Обновить' : 'Сохранить'"></span>
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo me-1"></i>Сбросить
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Устанавливаем выбранный статус клиента
+    document.addEventListener('DOMContentLoaded', function() {
+        const isNewCustomerValue = document.querySelector('[name="isNewCustomer"]').value;
+        const selectElement = document.getElementById('isNewCustomer');
+
+        if (selectElement && isNewCustomerValue) {
+            for (let i = 0; i < selectElement.options.length; i++) {
+                if (selectElement.options[i].value === isNewCustomerValue) {
+                    selectElement.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

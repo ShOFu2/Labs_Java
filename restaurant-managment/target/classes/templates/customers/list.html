@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиенты - Управление рестораном</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
+        .table-hover tbody tr:hover { background-color: rgba(102, 126, 234, 0.1); }
+    </style>
+</head>
+<body>
+<!-- Навигация -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-utensils me-2"></i>Управление рестораном
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" th:href="@{/}"><i class="fas fa-home"></i> Главная</a>
+            <a class="nav-link active" th:href="@{/customers}"><i class="fas fa-users"></i> Клиенты</a>
+            <a class="nav-link" th:href="@{/orders}"><i class="fas fa-shopping-cart"></i> Заказы</a>
+            <a class="nav-link" th:href="@{/order-items}"><i class="fas fa-list"></i> Позиции</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-users me-2"></i>Управление клиентами
+            </h3>
+            <a th:href="@{/customers/new}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Добавить клиента
+            </a>
+        </div>
+        <div class="card-body">
+
+            <!-- Поиск -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <form th:action="@{/customers/search}" method="get" class="d-flex">
+                        <input type="text" name="name" class="form-control me-2"
+                               placeholder="Поиск по имени..." th:value="${searchTerm}">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-search"></i> Найти
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Таблица клиентов -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Телефон</th>
+                        <th>Статус</th>
+                        <th>Дата регистрации</th>
+                        <th>Заказов</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="customer : ${customers}"
+                        th:class="${customer.isNewCustomer} ? 'table-success' : ''">
+                        <td th:text="${customer.id}"></td>
+                        <td th:text="${customer.customerName}"></td>
+                        <td th:text="${customer.phoneNumber}"></td>
+                        <td>
+                            <span th:if="${customer.isNewCustomer}" class="badge bg-success">Новый</span>
+                            <span th:unless="${customer.isNewCustomer}" class="badge bg-secondary">Постоянный</span>
+                        </td>
+                        <td th:text="${customer.registrationDate != null} ?
+              ${#temporals.format(customer.registrationDate, 'dd.MM.yyyy')} :
+              'Не указана'"></td>
+                        <td>
+                            <span class="badge bg-info" th:text="${customer.orders.size()}"></span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a th:href="@{/customers/edit/{id}(id=${customer.id})}"
+                                   class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a th:href="@{/customers/delete/{id}(id=${customer.id})}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Удалить клиента?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${customers.empty}">
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="fas fa-user-slash fa-2x mb-2"></i>
+                            <p>Клиенты не найдены</p>
+                            <a th:href="@{/customers/new}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Добавить клиента
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Статистика -->
+            <div class="alert alert-light border mt-4">
+                <h6><i class="fas fa-chart-pie me-2"></i>Статистика клиентов</h6>
+                <div class="row">
+                    <div class="col-md-4">Всего клиентов: <strong th:text="${customers.size()}">0</strong></div>
+                    <div class="col-md-4">Новых: <strong th:text="${customers.?[isNewCustomer == true].size()}">0</strong></div>
+                    <div class="col-md-4">Постоянных: <strong th:text="${customers.?[isNewCustomer == false].size()}">0</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

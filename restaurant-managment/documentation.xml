@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-documentation>
+    <project-info>
+        <name>Restaurant Management System</name>
+        <description>Система управления рестораном с CRUD операциями</description>
+        <author>Дарипов Александр</author>
+    </project-info>
+
+    <database-info>
+        <database-type>PostgreSQL</database-type>
+        <tables>
+            <table>
+                <name>customers</name>
+                <description>Таблица клиентов ресторана</description>
+                <columns>
+                    <column>
+                        <name>customer_id</name>
+                        <type>SERIAL PRIMARY KEY</type>
+                        <description>Уникальный идентификатор клиента</description>
+                    </column>
+                    <column>
+                        <name>phone_number</name>
+                        <type>VARCHAR(20) NOT NULL UNIQUE</type>
+                        <description>Номер телефона клиента</description>
+                    </column>
+                    <column>
+                        <name>customer_name</name>
+                        <type>VARCHAR(100) NOT NULL</type>
+                        <description>Имя клиента</description>
+                    </column>
+                    <column>
+                        <name>is_new_customer</name>
+                        <type>BOOLEAN DEFAULT true</type>
+                        <description>Статус клиента (новый/постоянный)</description>
+                    </column>
+                    <column>
+                        <name>registration_date</name>
+                        <type>DATE</type>
+                        <description>Дата регистрации клиента</description>
+                    </column>
+                </columns>
+            </table>
+
+            <table>
+                <name>orders</name>
+                <description>Таблица заказов</description>
+                <foreign-key>customer_id REFERENCES customers(customer_id)</foreign-key>
+                <columns>
+                    <column>
+                        <name>order_id</name>
+                        <type>SERIAL PRIMARY KEY</type>
+                        <description>Уникальный идентификатор заказа</description>
+                    </column>
+                    <column>
+                        <name>order_date</name>
+                        <type>DATE NOT NULL</type>
+                        <description>Дата заказа</description>
+                    </column>
+                    <column>
+                        <name>order_time</name>
+                        <type>TIME NOT NULL</type>
+                        <description>Время заказа</description>
+                    </column>
+                    <column>
+                        <name>customer_id</name>
+                        <type>INTEGER NOT NULL</type>
+                        <description>Ссылка на клиента</description>
+                    </column>
+                    <column>
+                        <name>employee_id</name>
+                        <type>INTEGER NOT NULL</type>
+                        <description>Идентификатор сотрудника</description>
+                    </column>
+                    <column>
+                        <name>employee_name</name>
+                        <type>VARCHAR(100) NOT NULL</type>
+                        <description>Имя сотрудника</description>
+                    </column>
+                    <column>
+                        <name>shift_date</name>
+                        <type>DATE NOT NULL</type>
+                        <description>Дата смены сотрудника</description>
+                    </column>
+                    <column>
+                        <name>payment_method</name>
+                        <type>VARCHAR(50) NOT NULL</type>
+                        <description>Способ оплаты</description>
+                    </column>
+                    <column>
+                        <name>total_amount</name>
+                        <type>DECIMAL(10,2) NOT NULL</type>
+                        <description>Общая сумма заказа</description>
+                    </column>
+                </columns>
+            </table>
+
+            <table>
+                <name>order_items</name>
+                <description>Таблица позиций заказа</description>
+                <foreign-key>order_id REFERENCES orders(order_id)</foreign-key>
+                <columns>
+                    <column>
+                        <name>order_item_id</name>
+                        <type>SERIAL PRIMARY KEY</type>
+                        <description>Уникальный идентификатор позиции</description>
+                    </column>
+                    <column>
+                        <name>order_id</name>
+                        <type>INTEGER NOT NULL</type>
+                        <description>Ссылка на заказ</description>
+                    </column>
+                    <column>
+                        <name>product_id</name>
+                        <type>INTEGER NOT NULL</type>
+                        <description>Идентификатор продукта</description>
+                    </column>
+                    <column>
+                        <name>product_name</name>
+                        <type>VARCHAR(100) NOT NULL</type>
+                        <description>Название продукта</description>
+                    </column>
+                    <column>
+                        <name>product_category</name>
+                        <type>VARCHAR(50) NOT NULL</type>
+                        <description>Категория продукта (Напитки, Выпечка, Десерт)</description>
+                    </column>
+                    <column>
+                        <name>product_size</name>
+                        <type>VARCHAR(20)</type>
+                        <description>Размер (только для напитков)</description>
+                    </column>
+                    <column>
+                        <name>base_price</name>
+                        <type>DECIMAL(10,2) NOT NULL</type>
+                        <description>Базовая цена за единицу</description>
+                    </column>
+                    <column>
+                        <name>quantity</name>
+                        <type>INTEGER NOT NULL</type>
+                        <description>Количество</description>
+                    </column>
+                    <column>
+                        <name>final_price</name>
+                        <type>DECIMAL(10,2) NOT NULL</type>
+                        <description>Итоговая цена (цена × количество)</description>
+                    </column>
+                </columns>
+            </table>
+        </tables>
+    </database-info>
+
+    <application-info>
+        <technology-stack>
+            <backend>Spring Boot 3.2.4</backend>
+            <frontend>Thymeleaf + Bootstrap 5</frontend>
+            <database>PostgreSQL</database>
+            <build-tool>Maven</build-tool>
+            <java-version>17</java-version>
+        </technology-stack>
+
+        <project-structure>
+            <package>
+                <name>ru.restaurant.entity</name>
+                <description>JPA Entity классы (Customer, Order, OrderItem)</description>
+            </package>
+            <package>
+                <name>ru.restaurant.repository</name>
+                <description>Spring Data JPA Repository интерфейсы</description>
+            </package>
+            <package>
+                <name>ru.restaurant.service</name>
+                <description>Service классы с бизнес-логикой</description>
+            </package>
+            <package>
+                <name>ru.restaurant.controller</name>
+                <description>Spring MVC Controller классы</description>
+            </package>
+            <package>
+                <name>ru.restaurant.dto</name>
+                <description>Data Transfer Objects (если потребуется)</description>
+            </package>
+        </project-structure>
+
+        <crud-operations>
+            <operation>
+                <entity>Customer</entity>
+                <operations>Create, Read, Update, Delete, Search</operations>
+                <endpoints>
+                    <endpoint>GET /customers - список клиентов</endpoint>
+                    <endpoint>GET /customers/new - форма создания</endpoint>
+                    <endpoint>POST /customers - создание клиента</endpoint>
+                    <endpoint>GET /customers/edit/{id} - форма редактирования</endpoint>
+                    <endpoint>POST /customers/update/{id} - обновление клиента</endpoint>
+                    <endpoint>GET /customers/delete/{id} - удаление клиента</endpoint>
+                    <endpoint>GET /customers/search - поиск клиентов</endpoint>
+                </endpoints>
+            </operation>
+
+            <operation>
+                <entity>Order</entity>
+                <operations>Create, Read, Update, Delete, View Details</operations>
+                <endpoints>
+                    <endpoint>GET /orders - список заказов</endpoint>
+                    <endpoint>GET /orders/new - форма создания</endpoint>
+                    <endpoint>POST /orders - создание заказа</endpoint>
+                    <endpoint>GET /orders/edit/{id} - форма редактирования</endpoint>
+                    <endpoint>POST /orders/update/{id} - обновление заказа</endpoint>
+                    <endpoint>GET /orders/delete/{id} - удаление заказа</endpoint>
+                    <endpoint>GET /orders/details/{id} - детали заказа</endpoint>
+                </endpoints>
+            </operation>
+
+            <operation>
+                <entity>OrderItem</entity>
+                <operations>Create, Read, Update, Delete</operations>
+                <endpoints>
+                    <endpoint>GET /order-items - список позиций</endpoint>
+                    <endpoint>GET /order-items/new - форма создания</endpoint>
+                    <endpoint>POST /order-items - создание позиции</endpoint>
+                    <endpoint>GET /order-items/edit/{id} - форма редактирования</endpoint>
+                    <endpoint>POST /order-items/update/{id} - обновление позиции</endpoint>
+                    <endpoint>GET /order-items/delete/{id} - удаление позиции</endpoint>
+                </endpoints>
+            </operation>
+        </crud-operations>
+
+        <validation-rules>
+            <rule>
+                <field>phoneNumber</field>
+                <constraint>@Pattern(regexp = "^\\+?[1-9]\\d{1,14}$")</constraint>
+                <message>Неверный формат телефона</message>
+            </rule>
+            <rule>
+                <field>customerName</field>
+                <constraint>@NotBlank</constraint>
+                <message>Имя клиента обязательно</message>
+            </rule>
+            <rule>
+                <field>quantity</field>
+                <constraint>@Min(value = 1)</constraint>
+                <message>Количество должно быть не менее 1</message>
+            </rule>
+            <rule>
+                <field>totalAmount</field>
+                <constraint>@DecimalMin(value = "0.01")</constraint>
+                <message>Сумма должна быть больше 0</message>
+            </rule>
+        </validation-rules>
+
+        <features>
+            <feature>CRUD операции для всех таблиц</feature>
+            <feature>Валидация вводимых данных</feature>
+            <feature>Поиск клиентов по имени</feature>
+            <feature>Детализация заказов</feature>
+            <feature>Автоматический расчет цен</feature>
+            <feature>Статистика по таблицам</feature>
+            <feature>Адаптивный дизайн (Bootstrap 5)</feature>
+            <feature>Иконки Font Awesome</feature>
+            <feature>Валидация форм на стороне сервера</feature>
+        </features>
+
+        <deployment>
+            <port>8080</port>
+            <database-url>jdbc:postgresql://localhost:5432/restaurant_db</database-url>
+            <start-command>mvn spring-boot:run</start-command>
+            <build-command>mvn clean package</build-command>
+        </deployment>
+    </application-info>
+</project-documentation>

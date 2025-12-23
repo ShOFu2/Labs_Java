@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${order.id != null} ? 'Редактирование заказа' : 'Создание заказа'">
+        Создание заказа
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding: 20px; }
+        .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        <span th:text="${order.id != null} ? 'Редактирование заказа' : 'Создание нового заказа'"></span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="${order.id != null} ?
+                                         @{/orders/update/{id}(id=${order.id})} :
+                                         @{/orders}"
+                          method="post" th:object="${order}">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="customer" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Клиент *
+                                </label>
+                                <select th:field="*{customer.id}" class="form-select" required id="customer">
+                                    <option value="">Выберите клиента</option>
+                                    <option th:each="customer : ${customers}"
+                                            th:value="${customer.id}"
+                                            th:text="${customer.customerName + ' (' + customer.phoneNumber + ')'}"
+                                            th:selected="${customer.id == order.customer?.id}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="orderDate" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Дата заказа *
+                                </label>
+                                <input type="date" th:field="*{orderDate}"
+                                       class="form-control" required id="orderDate">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="orderTime" class="form-label">
+                                    <i class="fas fa-clock me-1"></i>Время заказа *
+                                </label>
+                                <input type="time" th:field="*{orderTime}"
+                                       class="form-control" required id="orderTime">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="employeeId" class="form-label">
+                                    <i class="fas fa-id-badge me-1"></i>ID сотрудника *
+                                </label>
+                                <input type="number" th:field="*{employeeId}"
+                                       class="form-control" min="1" required id="employeeId">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="employeeName" class="form-label">
+                                    <i class="fas fa-user-tie me-1"></i>Имя сотрудника *
+                                </label>
+                                <input type="text" th:field="*{employeeName}"
+                                       class="form-control" required id="employeeName">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="shiftDate" class="form-label">
+                                    <i class="fas fa-calendar-alt me-1"></i>Дата смены *
+                                </label>
+                                <input type="date" th:field="*{shiftDate}"
+                                       class="form-control" required id="shiftDate">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="paymentMethod" class="form-label">
+                                    <i class="fas fa-credit-card me-1"></i>Способ оплаты *
+                                </label>
+                                <select th:field="*{paymentMethod}" class="form-select" required id="paymentMethod">
+                                    <option value="">Выберите способ оплаты</option>
+                                    <option value="Наличные">Наличные</option>
+                                    <option value="Карта">Карта</option>
+                                    <option value="Онлайн">Онлайн</option>
+                                    <option value="Безналичный расчет">Безналичный расчет</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="totalAmount" class="form-label">
+                                    <i class="fas fa-money-bill-wave me-1"></i>Сумма заказа (₽) *
+                                </label>
+                                <input type="number" th:field="*{totalAmount}"
+                                       class="form-control" step="0.01" min="0.01" required id="totalAmount">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a th:href="@{/orders}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Назад к списку
+                            </a>
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save me-1"></i>
+                                    <span th:text="${order.id != null} ? 'Обновить' : 'Сохранить'"></span>
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo me-1"></i>Сбросить
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Установить сегодняшнюю дату по умолчанию
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        const timeNow = new Date().toTimeString().split(':').slice(0, 2).join(':');
+
+        const dateInput = document.getElementById('orderDate');
+        const timeInput = document.getElementById('orderTime');
+        const shiftInput = document.getElementById('shiftDate');
+
+        if (dateInput && !dateInput.value) dateInput.value = today;
+        if (timeInput && !timeInput.value) timeInput.value = timeNow;
+        if (shiftInput && !shiftInput.value) shiftInput.value = today;
+    });
+</script>
+</body>
+</html>

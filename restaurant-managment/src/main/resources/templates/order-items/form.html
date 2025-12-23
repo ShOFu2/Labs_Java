@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${orderItem.id != null} ? 'Редактирование позиции' : 'Добавление позиции'">
+        Добавление позиции
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding: 20px; }
+        .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        <span th:text="${orderItem.id != null} ? 'Редактирование позиции заказа' : 'Добавление новой позиции'"></span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="${orderItem.id != null} ?
+                                         @{/order-items/update/{id}(id=${orderItem.id})} :
+                                         @{/order-items}"
+                          method="post" th:object="${orderItem}">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="order" class="form-label">
+                                    <i class="fas fa-shopping-cart me-1"></i>Заказ *
+                                </label>
+                                <select th:field="*{order.id}" class="form-select" required id="order">
+                                    <option value="">Выберите заказ</option>
+                                    <option th:each="order : ${orders}"
+                                            th:value="${order.id}"
+                                            th:text="'Заказ #' + ${order.id} + ' (Клиент: ' + ${order.customer.customerName} + ')'"
+                                            th:selected="${order.id == orderItem.order?.id}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="productId" class="form-label">
+                                    <i class="fas fa-barcode me-1"></i>ID продукта *
+                                </label>
+                                <input type="number" th:field="*{productId}"
+                                       class="form-control" min="1" required id="productId">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="productName" class="form-label">
+                                    <i class="fas fa-tag me-1"></i>Название продукта *
+                                </label>
+                                <input type="text" th:field="*{productName}"
+                                       class="form-control" required id="productName">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="productCategory" class="form-label">
+                                    <i class="fas fa-layer-group me-1"></i>Категория *
+                                </label>
+                                <select th:field="*{productCategory}" class="form-select" required id="productCategory"
+                                        onchange="toggleSizeField()">
+                                    <option value="">Выберите категорию</option>
+                                    <option value="Напитки">Напитки</option>
+                                    <option value="Выпечка">Выпечка</option>
+                                    <option value="Десерт">Десерт</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3" id="sizeFieldContainer">
+                                <label for="productSize" class="form-label">
+                                    <i class="fas fa-expand me-1"></i>Размер (только для напитков)
+                                </label>
+                                <input type="text" th:field="*{productSize}"
+                                       class="form-control" id="productSize"
+                                       placeholder="Например: S, M, L, 250мл, 500мл">
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="basePrice" class="form-label">
+                                    <i class="fas fa-money-bill me-1"></i>Цена (₽) *
+                                </label>
+                                <input type="number" th:field="*{basePrice}"
+                                       class="form-control" step="0.01" min="0.01"
+                                       required id="basePrice" placeholder="0.00">
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="quantity" class="form-label">
+                                    <i class="fas fa-boxes me-1"></i>Количество *
+                                </label>
+                                <input type="number" th:field="*{quantity}"
+                                       class="form-control" min="1" required id="quantity">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="finalPrice" class="form-label">
+                                    <i class="fas fa-calculator me-1"></i>Итоговая цена (₽)
+                                </label>
+                                <input type="number" th:field="*{finalPrice}"
+                                       class="form-control" step="0.01" min="0.01"
+                                       required id="finalPrice" readonly
+                                       style="background-color: #f8f9fa; font-weight: bold;">
+                                <small class="form-text text-muted">
+                                    Рассчитывается автоматически: Цена × Количество
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a th:href="@{/order-items}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Назад к списку
+                            </a>
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save me-1"></i>
+                                    <span th:text="${orderItem.id != null} ? 'Обновить' : 'Сохранить'"></span>
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo me-1"></i>Сбросить
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Функция для показа/скрытия поля размера
+    function toggleSizeField() {
+        const category = document.getElementById('productCategory').value;
+        const sizeContainer = document.getElementById('sizeFieldContainer');
+        const sizeInput = document.getElementById('productSize');
+
+        // Показываем поле размера только для напитков
+        if (category === 'Напитки') {
+            sizeContainer.style.display = 'block';
+            sizeInput.required = true;
+        } else {
+            sizeContainer.style.display = 'none';
+            sizeInput.required = false;
+            sizeInput.value = ''; // Очищаем значение
+        }
+    }
+
+    // Функция для расчета итоговой цены
+    function calculateFinalPrice() {
+        const basePrice = parseFloat(document.getElementById('basePrice').value) || 0;
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const finalPrice = basePrice * quantity;
+
+        const finalPriceInput = document.getElementById('finalPrice');
+        if (finalPriceInput) {
+            finalPriceInput.value = finalPrice.toFixed(2);
+        }
+    }
+
+    // При загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Инициализируем поле размера
+        toggleSizeField();
+
+        // Назначаем обработчики для расчета цены
+        const basePriceInput = document.getElementById('basePrice');
+        const quantityInput = document.getElementById('quantity');
+
+        if (basePriceInput && quantityInput) {
+            basePriceInput.addEventListener('input', calculateFinalPrice);
+            quantityInput.addEventListener('input', calculateFinalPrice);
+
+            // Вызываем расчет при загрузке для существующих значений
+            calculateFinalPrice();
+        }
+
+        // Автозаполнение итоговой цены при вводе
+        const finalPriceInput = document.getElementById('finalPrice');
+        if (finalPriceInput && basePriceInput && quantityInput) {
+            // Если поля заполнены, рассчитываем
+            if (basePriceInput.value && quantityInput.value) {
+                calculateFinalPrice();
+            }
+        }
+    });
+</script>
+<script>
+    // Автовыбор заказа из URL параметра
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+
+        if (orderId) {
+            const orderSelect = document.getElementById('order');
+            if (orderSelect) {
+                // Находим опцию с нужным orderId и выбираем её
+                for (let i = 0; i < orderSelect.options.length; i++) {
+                    if (orderSelect.options[i].value === orderId) {
+                        orderSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
